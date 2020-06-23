@@ -17,59 +17,40 @@ class Solution:
         if len(nums) < 4:
             return []
 
+        result = []
         nums = sorted(nums)
-        freqs = collections.Counter(nums)
+        for i in range(len(nums) - 3):
+            if i != 0 and nums[i - 1] == nums[i]:
+                continue
+            if nums[i] + nums[i+1] + nums[i+2] + nums[i+3] > target:
+                break
+            if nums[i] + nums[len(nums)-3] + nums[len(nums)-2] + nums[len(nums)-1] < target:
+                continue
 
-        freqs_keys = sorted(freqs.keys())
-        pairs = {}
-        for i in range(len(freqs_keys)):
-            for j in range(i, len(freqs_keys)):
-                if freqs_keys[i] == freqs_keys[j] and freqs[freqs_keys[i]] < 2:
+            target_minus_nums_i = target - nums[i]
+            for j in range(i + 1, len(nums) - 2):
+                if j != i + 1 and nums[j - 1] == nums[j]:
+                    continue
+                if nums[j] + nums[j+1] + nums[j+2] > target_minus_nums_i:
+                    break
+                if nums[j] + nums[len(nums)-2] + nums[len(nums)-1] < target_minus_nums_i:
                     continue
 
-                pair = [freqs_keys[i], freqs_keys[j]]
-                sum_ = freqs_keys[i] + freqs_keys[j]
-                if sum_ not in pairs.keys():
-                    pairs[sum_] = [pair]
-                else:
-                    pairs[sum_].append(pair)
+                k = j + 1
+                l = len(nums) - 1
+                while k < l:
+                    sum_ = nums[i] + nums[j] + nums[k] + nums[l]
+                    if sum_ == target:
+                        result.append([nums[i], nums[j], nums[k], nums[l]])
 
-        print(pairs)
-
-        # pairs_keys are unique sums of pairs
-        result = []
-        pairs_keys = sorted(pairs.keys())
-        i = 0
-        while i < len(pairs_keys):
-            j = len(pairs_keys) - 1
-            quad_sum = pairs_keys[i] + pairs_keys[j]
-            while j >= i and quad_sum >= target:
-                quad_sum = pairs_keys[i] + pairs_keys[j]
-                if quad_sum == target:
-                    k = 0
-                    while k < len(pairs[pairs_keys[i]]):
-                        l = len(pairs[pairs_keys[j]]) - 1
-                        while 0 <= l and (i != j or k <= l):
-                            quad = [x for x in pairs[pairs_keys[i]][k]]
-                            quad.extend(pairs[pairs_keys[j]][l])
-                            quad_freqs = collections.Counter(quad)
-                            success = True
-                            for key in quad_freqs.keys():
-                                if quad_freqs[key] > freqs[key]:
-                                    success = False
-                            if success:
-                                quad = sorted(quad)
-                                def list_equals(x, y): return collections.Counter(
-                                    x) == collections.Counter(y)
-                                for r in result:
-                                    if list_equals(quad, r):
-                                        success = False
-                                if success:
-                                    result.append(sorted(quad))
-                            l -= 1
+                    if sum_ <= target:
                         k += 1
-                j -= 1
-            i += 1
+                        while nums[k - 1] == nums[k] and k < l:
+                            k += 1
+                    else:
+                        l -= 1
+                        while nums[l + 1] == nums[l] and k < l:
+                            l -= 1
         return result
 
 
@@ -99,4 +80,5 @@ if __name__ == "__main__":
     # unittest.main()
     # print(Solution().fourSum([1, 0, -1, 0, -2, 2], 0))
     # print(Solution().fourSum([1, 1, 1, 1], 4))
-    print(Solution().fourSum([-3, -2, -1, 0, 0, 1, 2, 3], 0))
+    # print(Solution().fourSum([-3, -2, -1, 0, 0, 1, 2, 3], 0))
+    print(Solution().fourSum([0, 0, 0, 0], 0))
