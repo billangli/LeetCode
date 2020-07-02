@@ -6,18 +6,16 @@
 #         self.right = right
 class Solution:
     def levelOrderBottom(self, root: TreeNode) -> List[List[int]]:
-        if root is None:
-            return []
-        
-        left_order = self.levelOrderBottom(root.left)
-        right_order = self.levelOrderBottom(root.right)
         result = []
-        for i in range(-1, -1 - max(len(left_order), len(right_order)), -1):
-            row = []
-            if len(left_order) + i >= 0:
-                row.extend(left_order[i])
-            if len(right_order) + i >= 0:
-                row.extend(right_order[i])
-            result.insert(0, row)
-        result.append([root.val])
+        queue = [root]
+        while len(queue) > 0:
+            level = []
+            for _ in range(len(queue)):
+                node = queue.pop(0)
+                if node is not None:
+                    level.append(node.val)
+                    queue.append(node.left)
+                    queue.append(node.right)
+            if level != []:
+                result.insert(0, level)
         return result
