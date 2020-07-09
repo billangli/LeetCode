@@ -5,43 +5,17 @@
 #         self.left = left
 #         self.right = right
 class Solution:
-    def widthOfBinaryTree(self, root: TreeNode) -> int:
-        def getExtremities(root: TreeNode) -> List[List[int]]:
-            """
-            Return a list of list of two ints
-            The outer list is the level of the list in reverse, where the last item is root
-            The inner list is the leftmost and rightmost node in that level
-            Leftmost is 0 and rightmost is 2^level - 1
-            """
+    def widthOfBinaryTree(self, root: TreeNode) -> int:        
+        def dfs(root: TreeNode, num: int, level: int) -> int:
             if root is None:
-                return []
+                return 0
             
-            left_result = getExtremities(root.left)
-            right_result = getExtremities(root.right)
-            
-            i = len(left_result) - 1
-            j = len(right_result) - 1
-            level = 0
-            result_len = max(len(left_result), len(right_result))
-            result = [[] for _ in range(result_len + 1)]
-            
-            result[-1] = [0, 0]
-            while i >= 0 or j >= 0:
-                padding = 2 ** level
-                leftmost = left_result[i][0] if i >= 0 else right_result[j][0] + padding
-                rightmost = left_result[i][1] if j < 0 else right_result[j][1] + padding
-                result[result_len - level - 1] = [leftmost, rightmost]
-                i -= 1
-                j -= 1
-                level += 1
-                
-            return result
-        
-        extremities = getExtremities(root)
-        max_ = 0
-        for list_ in extremities:
-            diff = list_[1] - list_[0] + 1
-            if max_ < diff:
-                max_ = diff
-        return max_
-                
+            root.val = num
+            if len(leftmost) < level:
+                leftmost.append(root.val)
+            return max(dfs(root.left, 2 * num, level + 1),
+                       dfs(root.right, 2* num + 1, level + 1),
+                       root.val - leftmost[level - 1])
+    
+        leftmost = []
+        return dfs(root, 1, 1) + 1
